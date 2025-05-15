@@ -1,14 +1,20 @@
 #include "parser.hh"
+#include "error.hh"
 
 #include <iostream>
 
 int main (int argc, char *argv[]) {
-    std::cout << "Enter text: ";
-    std::string input;
-    std::getline(std::cin, input);
+    std::string inputFile = "test.txt";
 
-    Parser parse;
+    Parser* parse = new Parser();
 
-    std::cout << parse.parse<std::string>(input) << std::endl;
+    try {
+        parse->parseFile(inputFile);
+    }
+    catch (ParseError const& ex) {
+        std::cout << "ParseError: " << ex.what() << std::endl;
+    }
+
+    delete parse;
     return 0;
 }

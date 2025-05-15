@@ -1,12 +1,37 @@
 #include "parser.hh"
+#include "error.hh"
+#include <string>
 
-constexpr static char s_DELEMITER = ' ';
+constexpr static char s_DELIMITER = ' ';
+const static std::string s_OUTPUT_FILE = "output.txt";
 
-Parser::Parser() {
+//------------------------------------------------------------------------------
+// PUBLIC INTERFACE
+void Parser::parseFile(const std::string& fileName) {
+    std::ifstream inputFileObj(fileName);
+    std::ofstream outputFileObj(s_OUTPUT_FILE);
+    
+    if (!inputFileObj) {
+        throw ParseError("Error in reading file!!!");
+    }
+
+    if (!outputFileObj) {
+        throw ParseError("Error writing to file!!!");
+    }
+
+    std::string line;
+    while(std::getline(inputFileObj, line)) {
+        std::string result = parse<std::string>(line);
+        outputFileObj << result << "\n";
+    }
+
+    inputFileObj.close();
+    outputFileObj.close();
 }
 
-Parser::~Parser() {
-}
+
+//------------------------------------------------------------------------------
+// PRIVATE INTERFACE
 
 std::string Parser::parseText(std::string& text) {
     std::vector<std::string> tokens = tokenize(text);
@@ -16,12 +41,12 @@ std::string Parser::parseText(std::string& text) {
     return output;
 }
 
-std::vector<std::string> Parser::tokenize(const std::string& text) const {
+std::vector<std::string> Parser::tokenize(const std::string& text) {
     std::vector<std::string> tokens; 
-    std::string temp = ""; 
+    std::string temp;
 
     for (char c : text) {
-        if (c == s_DELEMITER) {
+        if (c == s_DELIMITER) {
             tokens.push_back(temp);
             temp.clear();
 
@@ -86,7 +111,7 @@ double Parser::convertToNum(const std::vector<std::string>& tokens) {
     double current = 0.00;
     double result = 0.00;
 
-    for (const std::string token : tokens) {
+    for (const std::string& token : tokens) {
         if (s_UNITS.count(token)) {
             current += s_UNITS.at(token);
         } else if (s_TENS.count(token)) {

@@ -9,6 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Source files
 set(SOURCE_FILES
     src/main.cpp
+    src/error.cpp
     src/parser.cpp)
 
 # Your executable

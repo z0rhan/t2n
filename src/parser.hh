@@ -1,12 +1,15 @@
 #ifndef PARSER_HH
 #define PARSER_HH
 
+#include "error.hh"
+
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <fstream>
 
 const std::unordered_map<std::string, int> s_UNITS = {
     {"zero", 0},     {"one", 1},        {"two", 2},       {"three", 3},
@@ -25,18 +28,20 @@ const std::unordered_map<std::string, int> s_SCALES = {
 
 class Parser {
 public:
-    Parser();
-    ~Parser();
+    Parser() = default;
+    ~Parser() = default;
 
     template <typename T> T parse(std::string &text) {
       return static_cast<T>(parseText(text));
     }
 
+    void parseFile(const std::string& fileName);
+
 private:
-    std::string parseText(std::string &text);
-    std::vector<std::string> tokenize(const std::string& text) const;
-    std::string handleTokens(const std::vector<std::string>& tokens);
-    double convertToNum(const std::vector<std::string>& tokens);
+    static std::string parseText(std::string &text);
+    static std::vector<std::string> tokenize(const std::string& text);
+    static std::string handleTokens(const std::vector<std::string>& tokens);
+    static double convertToNum(const std::vector<std::string>& tokens);
 };
 
 #endif // PARSER_HH

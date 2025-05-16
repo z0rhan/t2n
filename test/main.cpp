@@ -15,6 +15,9 @@ int main (int argc, char *argv[]) {
         std::cout << "ParseError: " << ex.what() << std::endl;
     }
 
+    std::cout << parse->parseNumber<int>("one hundred one") << std::endl;
+    std::cout << parse->parseNumber<float>("one hundred one point one two") << std::endl;
+
     delete parse;
     return 0;
 }

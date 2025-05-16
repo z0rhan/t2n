@@ -1,9 +1,11 @@
 #include "parser.hh"
 #include "error.hh"
+#include <stdexcept>
 #include <string>
 
 constexpr static char s_DELIMITER = ' ';
 const static std::string s_OUTPUT_FILE = "output.txt";
+const static std::string s_POINT = "point";
 
 //------------------------------------------------------------------------------
 // PUBLIC INTERFACE
@@ -21,7 +23,7 @@ void Parser::parseFile(const std::string& fileName) {
 
     std::string line;
     while(std::getline(inputFileObj, line)) {
-        std::string result = parse<std::string>(line);
+        std::string result = parseText(line, true);
         outputFileObj << result << "\n";
     }
 
@@ -29,14 +31,30 @@ void Parser::parseFile(const std::string& fileName) {
     outputFileObj.close();
 }
 
-
 //------------------------------------------------------------------------------
 // PRIVATE INTERFACE
+int Parser::parseInt(std::string& text) {
+    try {
+        return std::stoi(parseText(text));
+    }
+    catch (std::invalid_argument const& e) {
+        throw ParseError(e.what());
+    }
+}
 
-std::string Parser::parseText(std::string& text) {
+float Parser::parseFloat(std::string& text) {
+    try {
+        return std::stof(parseText(text, true));
+    }
+    catch (std::invalid_argument const& e) {
+        throw ParseError(e.what());
+    }
+}
+
+std::string Parser::parseText(std::string& text, const bool isFloat) {
     std::vector<std::string> tokens = tokenize(text);
        
-    std::string output = handleTokens(tokens);
+    std::string output = handleTokens(tokens, isFloat);
 
     return output;
 }
@@ -63,7 +81,9 @@ std::vector<std::string> Parser::tokenize(const std::string& text) {
     return tokens;
 }
 
-std::string Parser::handleTokens(const std::vector<std::string>& tokens) {
+std::string Parser::handleTokens(const std::vector<std::string>& tokens,
+                                 const bool isFloat)
+{
     std::ostringstream result;
     std::vector<std::string> numberBlock;
 
@@ -79,9 +99,16 @@ std::string Parser::handleTokens(const std::vector<std::string>& tokens) {
             s_TENS.count(tokenLowercase) ||
             s_SCALES.count(tokenLowercase))
         {
-            numberBlock.push_back(tokenLowercase);
+            numberBlock.push_back(tokenLowercase); // gather the numbers
 
             continue;
+        }
+
+        if (isFloat && tokenLowercase == s_POINT && !numberBlock.empty()) {
+            double num = convertToNum(numberBlock);
+            result << num;
+            numberBlock.clear();
+            handleDecimals(tokens, i, result);
         }
 
         if (!numberBlock.empty()) {
@@ -90,6 +117,7 @@ std::string Parser::handleTokens(const std::vector<std::string>& tokens) {
             result << num << " ";
             numberBlock.clear();
         }
+
         
         result << token;
 
@@ -128,3 +156,30 @@ double Parser::convertToNum(const std::vector<std::string>& tokens) {
 
     return result + current;
 }
+
+void Parser::handleDecimals(const std::vector<std::string>& tokens,
+                                  size_t& index, std::ostringstream& result)
+{
+    result << ".";
+    index++;
+
+    while (index < tokens.size()) {
+        std::string token = tokens[index];
+        std::string tokenLowercase = token;
+        std::transform(tokenLowercase.begin(),
+                       tokenLowercase.end(),
+                       tokenLowercase.begin(),
+                       [](char c) {return std::tolower(c);});
+        
+        if (s_UNITS.count(tokenLowercase)) {
+            result << s_UNITS.at(tokenLowercase);
+            index++;
+
+            continue;
+        }
+        
+        result << " " << token;
+        return; // If no more numbers
+    }
+}
+

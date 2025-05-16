@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.28)
 # Project name
 project(text2num)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Set output directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

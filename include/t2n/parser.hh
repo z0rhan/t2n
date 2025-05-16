@@ -74,7 +74,7 @@ private:
     static std::string handleTokens(const std::vector<std::string>& tokens,
                                     const bool isFloat = false);
     static double convertToNum(const std::vector<std::string>& tokens);
-    static void handleDecimals(const std::vector<std::string>& tokens,
+    static bool handleDecimals(const std::vector<std::string>& tokens,
                                       size_t& index, std::ostringstream& result);
 };
 

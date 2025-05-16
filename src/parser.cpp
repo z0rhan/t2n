@@ -108,7 +108,9 @@ std::string Parser::handleTokens(const std::vector<std::string>& tokens,
             double num = convertToNum(numberBlock);
             result << num;
             numberBlock.clear();
-            handleDecimals(tokens, i, result);
+            if (handleDecimals(tokens, i, result)) {
+                continue;
+            }
         }
 
         if (!numberBlock.empty()) {
@@ -157,10 +159,10 @@ double Parser::convertToNum(const std::vector<std::string>& tokens) {
     return result + current;
 }
 
-void Parser::handleDecimals(const std::vector<std::string>& tokens,
+bool Parser::handleDecimals(const std::vector<std::string>& tokens,
                                   size_t& index, std::ostringstream& result)
 {
-    result << ".";
+    bool isValidFloat = false;
     index++;
 
     while (index < tokens.size()) {
@@ -172,14 +174,22 @@ void Parser::handleDecimals(const std::vector<std::string>& tokens,
                        [](char c) {return std::tolower(c);});
         
         if (s_UNITS.count(tokenLowercase)) {
+            if (!isValidFloat) {
+                result << ".";
+            }
+
+            isValidFloat = true;
             result << s_UNITS.at(tokenLowercase);
             index++;
 
             continue;
         }
         
-        result << " " << token;
-        return; // If no more numbers
+        result << " " << token << " ";
+        return isValidFloat; // If no more numbers
     }
+    
+    index--;
+    return isValidFloat;
 }
 

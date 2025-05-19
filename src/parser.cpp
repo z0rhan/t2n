@@ -8,6 +8,17 @@ const static std::string s_OUTPUT_FILE = "output.txt";
 const static std::string s_POINT = "point";
 
 //------------------------------------------------------------------------------
+int Parser::Helper::parseInt(std::string& text);
+std::string parseText(std::string& text, const bool isFloat = false);
+std::vector<std::string> tokenize(const std::string& text);
+std::string handleTokens(const std::vector<std::string>& tokens,
+                         const bool isFloat);
+double convertToNum(const std::vector<std::string>& tokens);
+bool handleDecimals(const std::vector<std::string>& tokens,
+                    size_t& index, std::ostringstream& result);
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 // PUBLIC INTERFACE
 void Parser::parseFile(const std::string& fileName) {
     std::ifstream inputFileObj(fileName);
@@ -33,7 +44,9 @@ void Parser::parseFile(const std::string& fileName) {
 
 //------------------------------------------------------------------------------
 // PRIVATE INTERFACE
-int Parser::parseInt(std::string& text) {
+
+
+int Parser::Helper::parseInt(std::string& text) {
     try {
         return std::stoi(parseText(text));
     }
@@ -42,7 +55,7 @@ int Parser::parseInt(std::string& text) {
     }
 }
 
-float Parser::parseFloat(std::string& text) {
+float Parser::Helper::parseFloat(std::string& text) {
     try {
         return std::stof(parseText(text, true));
     }
@@ -51,7 +64,7 @@ float Parser::parseFloat(std::string& text) {
     }
 }
 
-std::string Parser::parseText(std::string& text, const bool isFloat) {
+std::string parseText(std::string& text, const bool isFloat) {
     std::vector<std::string> tokens = tokenize(text);
        
     std::string output = handleTokens(tokens, isFloat);
@@ -59,7 +72,7 @@ std::string Parser::parseText(std::string& text, const bool isFloat) {
     return output;
 }
 
-std::vector<std::string> Parser::tokenize(const std::string& text) {
+std::vector<std::string> tokenize(const std::string& text) {
     std::vector<std::string> tokens; 
     std::string temp;
 
@@ -81,8 +94,8 @@ std::vector<std::string> Parser::tokenize(const std::string& text) {
     return tokens;
 }
 
-std::string Parser::handleTokens(const std::vector<std::string>& tokens,
-                                 const bool isFloat)
+std::string handleTokens(const std::vector<std::string>& tokens,
+                         const bool isFloat)
 {
     std::ostringstream result;
     std::vector<std::string> numberBlock;
@@ -137,7 +150,7 @@ std::string Parser::handleTokens(const std::vector<std::string>& tokens,
     return result.str();
 }
 
-double Parser::convertToNum(const std::vector<std::string>& tokens) {
+double convertToNum(const std::vector<std::string>& tokens) {
     double current = 0.00;
     double result = 0.00;
 
@@ -159,8 +172,8 @@ double Parser::convertToNum(const std::vector<std::string>& tokens) {
     return result + current;
 }
 
-bool Parser::handleDecimals(const std::vector<std::string>& tokens,
-                                  size_t& index, std::ostringstream& result)
+bool handleDecimals(const std::vector<std::string>& tokens,
+                    size_t& index, std::ostringstream& result)
 {
     bool isValidFloat = false;
     index++;

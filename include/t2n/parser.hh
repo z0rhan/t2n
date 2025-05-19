@@ -29,10 +29,11 @@ const std::unordered_map<std::string, int> s_SCALES = {
 template <typename>
 inline constexpr bool c_alwaysFalse = false;
 
-class Parser {
-public:
-    Parser() = default;
-    ~Parser() = default;
+namespace Parser {
+    namespace Helper {
+        int parseInt(std::string& text);
+        float parseFloat(std::string& text);
+    }
 
     /*
      * @brief parse number in words to numbers
@@ -43,9 +44,9 @@ public:
     template <typename T>
     T parseNumber(std::string text) {
         if constexpr (std::is_same_v<T, int>) {
-            return parseInt(text);
+            return Helper::parseInt(text);
         } else if constexpr (std::is_same_v<T, float>) {
-            return parseFloat(text);
+            return Helper::parseFloat(text);
         } else {
             static_assert(c_alwaysFalse<T>, "Type not supported");
         }
@@ -65,17 +66,6 @@ public:
      */
     void parseFile(const std::string& fileName);
 
-private:
-    static int parseInt(std::string& text);
-    static float parseFloat(std::string& text);
-    static std::string parseText(std::string &text, const bool isFloat = false);
-
-    static std::vector<std::string> tokenize(const std::string& text);
-    static std::string handleTokens(const std::vector<std::string>& tokens,
-                                    const bool isFloat = false);
-    static double convertToNum(const std::vector<std::string>& tokens);
-    static bool handleDecimals(const std::vector<std::string>& tokens,
-                                      size_t& index, std::ostringstream& result);
 };
 
 #endif // PARSER_HH

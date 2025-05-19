@@ -21,4 +21,5 @@ To use the library, copy:
 - `build/lib/` (Contains the static library)
 - `include/`   (Contains the header files)
 
-to your project folder and link them in your build system.
+to your project folder and link them in your build system.   
+Use `#include <t2n.hh>` in your file to include the header file.

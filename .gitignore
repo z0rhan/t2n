@@ -7,3 +7,6 @@ build/
 # clangd
 compile_commands.json
 .cache/
+
+# formatter
+.clang-format

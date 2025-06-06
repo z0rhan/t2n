@@ -12,7 +12,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Source files
 set(SOURCE_FILES
     src/error.cpp
-    src/parser.cpp)
+    src/parser.cpp
+    src/parse-english.cpp)
 
 # Your executable
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
